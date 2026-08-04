@@ -1,0 +1,13 @@
+[project]
+name = "ramune"
+version = "0.1.0"
+description = "idk i just wanted to make a dumb discord bot that does dumb stuffs"
+readme = "README.md"
+requires-python = ">=3.14"
+dependencies = [
+    "discord.py[voice]",
+    "r2pipe",
+    "httpx",
+    "python-dotenv",
+    "selectolax"
+]
