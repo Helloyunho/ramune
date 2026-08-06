@@ -27,6 +27,7 @@ class Assembly(CogLogger):
             app_commands.Choice(name="64 Bit", value="64"),
         ],
     )
+    @app_commands.allowed_contexts(guilds=True, dms=True, private_channels=True)
     @handle_exception()
     async def asm_command(
         self, ctx: commands.Context, asm_text: str, arch: str = "x86", bits: str = "64"
@@ -102,6 +103,7 @@ class Assembly(CogLogger):
             app_commands.Choice(name="64 Bit", value="64"),
         ],
     )
+    @app_commands.allowed_contexts(guilds=True, dms=True, private_channels=True)
     @handle_exception()
     async def disasm_command(
         self, ctx: commands.Context, hex_text: str, arch: str = "x86", bits: str = "64"

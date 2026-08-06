@@ -20,6 +20,7 @@ class PsChangeLog(CogLogger):
             app_commands.Choice(name="PlayStation 5", value="ps5"),
         ]
     )
+    @app_commands.allowed_contexts(guilds=True, dms=True, private_channels=True)
     @handle_exception()
     async def changelog_command(
         self, ctx: commands.Context, console: str | None = "ps5"

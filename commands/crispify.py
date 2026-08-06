@@ -17,6 +17,9 @@ class Crispify(CogLogger):
         self.crispify_menu = app_commands.ContextMenu(
             name="Crispify This Media",
             callback=self.crispify_context_menu,
+            allowed_contexts=app_commands.AppCommandContext(
+                guild=True, dm_channel=True, private_channel=True
+            ),
         )
         self.bot.tree.add_command(self.crispify_menu)
         param = self.crispify_command.app_command._params.get("media")  # type: ignore
@@ -65,6 +68,7 @@ class Crispify(CogLogger):
     @app_commands.describe(
         media="The media file to crispify. Can be an image, video, or audio file.",
     )
+    @app_commands.allowed_contexts(guilds=True, dms=True, private_channels=True)
     @handle_exception()
     async def crispify_command(
         self, ctx: commands.Context, media: Attachment | None = None

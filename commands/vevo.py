@@ -21,6 +21,9 @@ class Vevo(CogLogger):
         self.vevo_menu = app_commands.ContextMenu(
             name="Vevo This Image",
             callback=self.vevo_context_menu,
+            allowed_contexts=app_commands.AppCommandContext(
+                guild=True, dm_channel=True, private_channel=True
+            ),
         )
         self.bot.tree.add_command(self.vevo_menu)
         param = self.vevo_command.app_command._params.get("image")  # type: ignore
@@ -75,6 +78,7 @@ class Vevo(CogLogger):
     @app_commands.describe(
         image="The image file to add a Vevo watermark to.",
     )
+    @app_commands.allowed_contexts(guilds=True, dms=True, private_channels=True)
     @handle_exception()
     async def vevo_command(
         self, ctx: commands.Context, image: Attachment | None = None

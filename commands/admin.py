@@ -11,6 +11,7 @@ class Admin(CogLogger):
         name="sync",
         description="Syncs the bot's commands with Discord.",
     )
+    @app_commands.allowed_contexts(guilds=True, dms=True, private_channels=True)
     @is_me()
     @handle_exception()
     async def sync_command(self, ctx: commands.Context):
@@ -23,6 +24,7 @@ class Admin(CogLogger):
     @app_commands.choices(
         cog=[app_commands.Choice(name=command, value=command) for command in COMMANDS]
     )
+    @app_commands.allowed_contexts(guilds=True, dms=True, private_channels=True)
     @is_me()
     @handle_exception()
     async def reload_command(self, ctx: commands.Context, cog: str | None = None):
