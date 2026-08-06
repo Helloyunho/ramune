@@ -74,7 +74,7 @@ class Crispify(CogLogger):
             "16k",
             "-vf",
             (
-                "scale=-1:36,fps=15" + ",select='not(mod(n,2))'"
+                "scale=-1:36,fps=15" + ",select='not(mod(n,3))',setpts=N/FRAME_RATE/TB"
                 if target_format == "mp4"
                 else ""
             ),
@@ -84,7 +84,6 @@ class Crispify(CogLogger):
                     "frag_keyframe+empty_moov",
                     "-crf",
                     "32",
-                    "-setpts=N/FRAME_RATE/TB",
                 ]
                 if target_format == "mp4"
                 else []
