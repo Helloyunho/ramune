@@ -73,8 +73,11 @@ class Crispify(CogLogger):
             "16k",
             "-vf",
             "scale=-1:36",
-            "-movflags",
-            "frag_keyframe+empty_moov",
+            *(
+                ["-filter:v", "fps=15", "-movflags", "frag_keyframe+empty_moov"]
+                if target_format == "mp4"
+                else []
+            ),
             "-f",
             target_format if target_format != "png" else "image2",
             *(["-c:v", "png", "-f", "image2pipe"] if target_format == "png" else []),
@@ -94,7 +97,16 @@ class Crispify(CogLogger):
             return stderr.decode()
 
         if target_format in ["mp4", "png"] and size:
-            self.logger.debug(f"Resizing back to {size[0]}x{size[1]}")
+            if size[0] > 1280 or size[1] > 1280:
+                aspect_ratio = size[0] / size[1]
+                if aspect_ratio > 1:
+                    new_width = 1280
+                    new_height = int(1280 / aspect_ratio)
+                else:
+                    new_height = 1280
+                    new_width = int(1280 * aspect_ratio)
+                size = [new_width, new_height]
+            self.logger.debug(f"Resizing to {size[0]}x{size[1]}")
             resize_cmd = [
                 "ffmpeg",
                 "-i",
