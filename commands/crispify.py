@@ -30,7 +30,7 @@ class Crispify(CogLogger):
 
     async def crispify_media(self, url: str, target_format: str) -> bytes | str:
         size = None
-        if target_format in ["mp4", "png"]:
+        if target_format in ["mp4", "png", "gif"]:
             cmd = [
                 "ffprobe",
                 "-v",
