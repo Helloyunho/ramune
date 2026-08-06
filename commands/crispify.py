@@ -73,10 +73,10 @@ class Crispify(CogLogger):
             "-b:a",
             "16k",
             "-vf",
-            "scale=-1:36",
+            "scale=-1:36,fps=15",
             *(
-                ["-filter:v", "fps=15", "-movflags", "frag_keyframe+empty_moov"]
-                if target_format == "mp4" or target_format == "gif"
+                ["-movflags", "frag_keyframe+empty_moov"]
+                if target_format == "mp4"
                 else []
             ),
             "-f",
