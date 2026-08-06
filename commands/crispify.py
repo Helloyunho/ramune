@@ -119,14 +119,14 @@ class Crispify(CogLogger):
                 "-",
                 "-loglevel",
                 "error",
+                "-b:v",
+                "16k",
                 "-vf",
                 f"scale={size[0]}:{size[1]}",
                 *(
                     [
                         "-movflags",
                         "frag_keyframe+empty_moov",
-                        "-bsf:v",
-                        "noise=amount=16384",
                         "-c:v",
                         "libx264",
                     ]
