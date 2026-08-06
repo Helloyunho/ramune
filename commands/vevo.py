@@ -1,15 +1,28 @@
 from discord.ext import commands
-from discord import app_commands, Attachment, File
+from discord import app_commands, Attachment, File, Interaction, Message
 from utils.cog_logger import CogLogger
 from utils.handle_exception import handle_exception
 import math
+import inspect
 from io import BytesIO
 from pathlib import Path
 from PIL import Image
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from main import Ramune
 
 
 class Vevo(CogLogger):
     vevo_logo_path = Path(__file__).parent.parent / "assets" / "vevo_logo.png"
+
+    def __init__(self, bot: "Ramune"):
+        super().__init__(bot)
+        self.vevo_menu = app_commands.ContextMenu(
+            name="Vevo This Image",
+            callback=self.vevo_context_menu,
+        )
+        self.bot.tree.add_command(self.vevo_menu)
 
     def generate_image(self, image: bytes) -> BytesIO:
         original_image = Image.open(BytesIO(image)).convert("RGBA")
@@ -59,14 +72,26 @@ class Vevo(CogLogger):
         image="The image file to add a Vevo watermark to.",
     )
     @handle_exception()
-    async def vevo_command(self, ctx: commands.Context, image: Attachment):
+    async def vevo_command(
+        self, ctx: commands.Context, image: Attachment | None = None
+    ):
+        if not image:
+            if (
+                ctx.message.reference
+                and (message_reference := ctx.message.reference.resolved)
+                and isinstance(message_reference, Message)
+                and message_reference.attachments
+            ):
+                image = message_reference.attachments[0]
+            else:
+                await ctx.send(
+                    "Please provide an image file to add a Vevo watermark to."
+                )
+                return
+
         self.logger.debug(
             f"Vevo command requested for image: {image.filename}, size: {image.size} bytes"
         )
-
-        if not image:
-            await ctx.send("Please provide an image file to add a Vevo watermark to.")
-            return
 
         image_type = (image.content_type or "unknown").split("/")[0]
         if image_type not in ["image"]:
@@ -81,6 +106,51 @@ class Vevo(CogLogger):
 
             await ctx.send(file=File(fp=output_buffer, filename="vevo.png"))
 
+    @handle_exception()
+    async def vevo_context_menu(self, interaction: Interaction, message: Message):
+        if not message.attachments:
+            await interaction.response.send_message(
+                "Please provide an image file to add a Vevo watermark to.",
+                ephemeral=True,
+            )
+            return
+
+        image = message.attachments[0]
+        self.logger.debug(
+            f"Vevo command requested for image: {image.filename}, size: {image.size} bytes"
+        )
+
+        if not image:
+            await interaction.response.send_message(
+                "Please provide an image file to add a Vevo watermark to.",
+                ephemeral=True,
+            )
+            return
+
+        image_type = (image.content_type or "unknown").split("/")[0]
+        if image_type not in ["image"]:
+            await interaction.response.send_message(
+                "Invalid image type. Please provide an image file.",
+                ephemeral=True,
+            )
+            return
+
+        await interaction.response.defer(thinking=True)
+        image_bytes = await image.read()
+        output_buffer = await self.bot.loop.run_in_executor(
+            None, self.generate_image, image_bytes
+        )
+
+        await interaction.followup.send(
+            file=File(fp=output_buffer, filename="vevo.png")
+        )
+
 
 async def setup(bot):
     await bot.add_cog(Vevo(bot))
+
+    cmd = bot.get_command("vevo")
+    if cmd:
+        cmd.params["image"] = cmd.params["image"].replace(
+            default=inspect.Parameter.empty
+        )
