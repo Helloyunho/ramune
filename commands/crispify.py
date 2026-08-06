@@ -73,17 +73,15 @@ class Crispify(CogLogger):
             "-b:a",
             "16k",
             "-vf",
-            (
-                "scale=-1:36,fps=15" + ",select='not(mod(n,3))',setpts=N/FRAME_RATE/TB"
-                if target_format == "mp4"
-                else ""
-            ),
+            "scale=-1:36,fps=15",
             *(
                 [
                     "-movflags",
                     "frag_keyframe+empty_moov",
                     "-crf",
                     "32",
+                    "-c:v",
+                    "libx264",
                 ]
                 if target_format == "mp4"
                 else []
@@ -124,9 +122,24 @@ class Crispify(CogLogger):
                 "-loglevel",
                 "error",
                 "-vf",
-                f"scale={size[0]}:{size[1]}",
-                "-movflags",
-                "frag_keyframe+empty_moov",
+                (
+                    f"scale={size[0]}:{size[1]}"
+                    + ",select='not(mod(n,3))',setpts=N/FRAME_RATE/TB"
+                    if target_format == "mp4"
+                    else ""
+                ),
+                *(
+                    [
+                        "-movflags",
+                        "frag_keyframe+empty_moov",
+                        "-crf",
+                        "32",
+                        "-c:v",
+                        "libx264",
+                    ]
+                    if target_format == "mp4"
+                    else []
+                ),
                 "-f",
                 target_format if target_format != "png" else "image2pipe",
                 *(
