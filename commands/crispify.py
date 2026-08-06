@@ -2,6 +2,7 @@ from discord.ext import commands
 from discord import app_commands, Attachment, File, Message, Interaction
 from utils.cog_logger import CogLogger
 from utils.handle_exception import handle_exception
+from utils.media import Media
 import asyncio
 import discord.utils
 from io import BytesIO
@@ -152,6 +153,7 @@ class Crispify(CogLogger):
     async def crispify_command(
         self, ctx: commands.Context, media: Attachment | None = None
     ):
+        media_converted: Media
         if not media:
             if (
                 ctx.message.reference
@@ -159,16 +161,24 @@ class Crispify(CogLogger):
                 and isinstance(message_reference, Message)
                 and message_reference.attachments
             ):
-                media = message_reference.attachments[0]
+                media_converted = Media(self.bot.http, message_reference.attachments[0])
+            elif (
+                ctx.message.embeds
+                and len(ctx.message.embeds) > 0
+                and ctx.message.embeds[0].type in ["image", "video", "gifv"]
+            ):
+                media_converted = Media(self.bot.http, ctx.message.embeds[0])
             else:
                 await ctx.send("Please provide a media file to crispify.")
                 return
+        else:
+            media_converted = Media(self.bot.http, media)
 
         self.logger.debug(
-            f"Crispify command requested for media: {media.filename}, size: {media.size} bytes"
+            f"Crispify command requested for media: {media_converted.filename}, size: {media_converted.size} bytes"
         )
 
-        media_type = (media.content_type or "unknown").split("/")[0]
+        media_type = (media_converted.content_type or "unknown").split("/")[0]
         if media_type not in ["image", "video", "audio"]:
             await ctx.send(
                 "Invalid media type. Please provide an image, video, or audio file."
@@ -179,14 +189,14 @@ class Crispify(CogLogger):
             "mp4"
             if media_type == "video"
             else (
-                ("png" if media.content_type != "image/gif" else "gif")
+                ("png" if media_converted.content_type != "image/gif" else "gif")
                 if media_type == "image"
                 else "mp3"
             )
         )
 
         async with ctx.typing():
-            result = await self.crispify_media(media.url, target_format)
+            result = await self.crispify_media(media_converted.url, target_format)
 
             if isinstance(result, str):
                 await ctx.send(
@@ -195,24 +205,31 @@ class Crispify(CogLogger):
                 return
 
         await ctx.send(
-            f"Crispified `{media.filename}`",
+            f"Crispified `{media_converted.filename}`",
             file=File(BytesIO(result), filename=f"crispified.{target_format}"),
         )
 
     @handle_exception()
     async def crispify_context_menu(self, interaction: Interaction, message: Message):
-        if not message.attachments:
+        if message.attachments:
+            media_converted = Media(self.bot.http, message.attachments[0])
+        elif (
+            message.embeds
+            and len(message.embeds) > 0
+            and message.embeds[0].type in ["image", "video", "gifv"]
+        ):
+            media_converted = Media(self.bot.http, message.embeds[0])
+        else:
             await interaction.response.send_message(
                 "Please provide a media file to crispify.", ephemeral=True
             )
             return
 
-        media = message.attachments[0]
         self.logger.debug(
-            f"Crispify command requested for media: {media.filename}, size: {media.size} bytes"
+            f"Crispify command requested for media: {media_converted.filename}, size: {media_converted.size} bytes"
         )
 
-        media_type = (media.content_type or "unknown").split("/")[0]
+        media_type = (media_converted.content_type or "unknown").split("/")[0]
         if media_type not in ["image", "video", "audio"]:
             await interaction.response.send_message(
                 "Invalid media type. Please provide an image, video, or audio file.",
@@ -224,7 +241,7 @@ class Crispify(CogLogger):
             "mp4"
             if media_type == "video"
             else (
-                ("png" if media.content_type != "image/gif" else "gif")
+                ("png" if media_converted.content_type != "image/gif" else "gif")
                 if media_type == "image"
                 else "mp3"
             )
@@ -232,7 +249,7 @@ class Crispify(CogLogger):
 
         await interaction.response.defer()
 
-        result = await self.crispify_media(media.url, target_format)
+        result = await self.crispify_media(media_converted.url, target_format)
 
         if isinstance(result, str):
             await interaction.followup.send(
@@ -242,7 +259,7 @@ class Crispify(CogLogger):
             return
 
         await interaction.followup.send(
-            f"Crispified `{media.filename}`",
+            f"Crispified `{media_converted.filename}`",
             file=File(BytesIO(result), filename=f"crispified.{target_format}"),
         )
 

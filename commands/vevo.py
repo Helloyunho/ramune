@@ -2,6 +2,7 @@ from discord.ext import commands
 from discord import app_commands, Attachment, File, Interaction, Message
 from utils.cog_logger import CogLogger
 from utils.handle_exception import handle_exception
+from utils.media import Media
 import math
 import discord.utils
 from io import BytesIO
@@ -83,6 +84,7 @@ class Vevo(CogLogger):
     async def vevo_command(
         self, ctx: commands.Context, image: Attachment | None = None
     ):
+        image_converted: Media
         if not image:
             if (
                 ctx.message.reference
@@ -90,24 +92,32 @@ class Vevo(CogLogger):
                 and isinstance(message_reference, Message)
                 and message_reference.attachments
             ):
-                image = message_reference.attachments[0]
+                image_converted = Media(self.bot.http, message_reference.attachments[0])
+            elif (
+                ctx.message.embeds
+                and len(ctx.message.embeds) > 0
+                and ctx.message.embeds[0].type in ["image", "video", "gifv"]
+            ):
+                image_converted = Media(self.bot.http, ctx.message.embeds[0])
             else:
                 await ctx.send(
                     "Please provide an image file to add a Vevo watermark to."
                 )
                 return
+        else:
+            image_converted = Media(self.bot.http, image)
 
         self.logger.debug(
-            f"Vevo command requested for image: {image.filename}, size: {image.size} bytes"
+            f"Vevo command requested for image: {image_converted.filename}, size: {image_converted.size} bytes"
         )
 
-        image_type = (image.content_type or "unknown").split("/")[0]
+        image_type = (image_converted.content_type or "unknown").split("/")[0]
         if image_type not in ["image"]:
             await ctx.send("Invalid image type. Please provide an image file.")
             return
 
         async with ctx.typing():
-            image_bytes = await image.read()
+            image_bytes = await image_converted.read()
             output_buffer = await self.bot.loop.run_in_executor(
                 None, self.generate_image, image_bytes
             )
@@ -123,19 +133,19 @@ class Vevo(CogLogger):
             )
             return
 
-        image = message.attachments[0]
+        image_converted = Media(self.bot.http, message.attachments[0])
         self.logger.debug(
-            f"Vevo command requested for image: {image.filename}, size: {image.size} bytes"
+            f"Vevo command requested for image: {image_converted.filename}, size: {image_converted.size} bytes"
         )
 
-        if not image:
+        if not image_converted:
             await interaction.response.send_message(
                 "Please provide an image file to add a Vevo watermark to.",
                 ephemeral=True,
             )
             return
 
-        image_type = (image.content_type or "unknown").split("/")[0]
+        image_type = (image_converted.content_type or "unknown").split("/")[0]
         if image_type not in ["image"]:
             await interaction.response.send_message(
                 "Invalid image type. Please provide an image file.",
@@ -144,7 +154,7 @@ class Vevo(CogLogger):
             return
 
         await interaction.response.defer(thinking=True)
-        image_bytes = await image.read()
+        image_bytes = await image_converted.read()
         output_buffer = await self.bot.loop.run_in_executor(
             None, self.generate_image, image_bytes
         )
