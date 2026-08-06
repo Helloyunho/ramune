@@ -43,3 +43,6 @@ while true; do
         run_command
     fi
 done
+
+# catch SIGINT and SIGTERM to clean up the child process
+trap 'echo "[Git Watch] Stopping..."; kill "$PID"; wait "$PID" 2>/dev/null; exit 0' SIGINT SIGTERM
