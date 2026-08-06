@@ -103,6 +103,8 @@ class Crispify(CogLogger):
                 "error",
                 "-vf",
                 f"scale={size[0]}:{size[1]}",
+                "-movflags",
+                "frag_keyframe+empty_moov",
                 "-f",
                 target_format if target_format != "png" else "image2pipe",
                 *(
