@@ -52,7 +52,7 @@ class Crispify(CogLogger):
             if process.returncode != 0:
                 self.logger.error(f"FFprobe error: {stderr.decode()}")
                 return stderr.decode()
-            size = stdout.decode().strip().split("x")
+            size = stdout.decode().strip().split("x")[:2]
             if len(size) != 2:
                 self.logger.error(
                     f"FFprobe error: unexpected output: {stdout.decode()}"
