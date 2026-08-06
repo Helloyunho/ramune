@@ -78,8 +78,6 @@ class Crispify(CogLogger):
                 [
                     "-movflags",
                     "frag_keyframe+empty_moov",
-                    "-crf",
-                    "32",
                     "-c:v",
                     "libx264",
                 ]
@@ -122,18 +120,13 @@ class Crispify(CogLogger):
                 "-loglevel",
                 "error",
                 "-vf",
-                (
-                    f"scale={size[0]}:{size[1]}"
-                    + ",select='not(mod(n,3))',setpts=N/FRAME_RATE/TB"
-                    if target_format == "mp4"
-                    else ""
-                ),
+                f"scale={size[0]}:{size[1]}",
                 *(
                     [
                         "-movflags",
                         "frag_keyframe+empty_moov",
-                        "-crf",
-                        "32",
+                        "-bsf:v",
+                        "noise=amount=16384",
                         "-c:v",
                         "libx264",
                     ]
