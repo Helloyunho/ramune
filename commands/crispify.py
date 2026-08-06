@@ -97,7 +97,7 @@ class Crispify(CogLogger):
             self.logger.error(f"FFmpeg error: {stderr.decode()}")
             return stderr.decode()
 
-        if target_format in ["mp4", "png"] and size:
+        if target_format in ["mp4", "png", "gif"] and size:
             if size[0] > 1280 or size[1] > 1280:
                 aspect_ratio = size[0] / size[1]
                 if aspect_ratio > 1:
