@@ -9,5 +9,6 @@ dependencies = [
     "r2pipe",
     "httpx",
     "python-dotenv",
-    "selectolax"
+    "selectolax",
+    "pillow>=12.3.0",
 ]
