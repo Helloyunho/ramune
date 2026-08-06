@@ -23,6 +23,17 @@ run_command() {
     PID=$!
 }
 
+cleanup() {
+    if [ -n "$PID" ] && kill -0 "$PID" 2>/dev/null; then
+        echo "[Git Watch] Stopping process ($PID)..."
+        kill "$PID"
+        wait "$PID" 2>/dev/null
+    fi
+}
+
+# catch SIGINT and SIGTERM to clean up the child process
+trap 'echo "[Git Watch] Stopping..."; cleanup; exit 0' SIGINT SIGTERM
+
 # Initial start
 run_command
 
@@ -43,6 +54,3 @@ while true; do
         run_command
     fi
 done
-
-# catch SIGINT and SIGTERM to clean up the child process
-trap 'echo "[Git Watch] Stopping..."; kill "$PID"; wait "$PID" 2>/dev/null; exit 0' SIGINT SIGTERM
