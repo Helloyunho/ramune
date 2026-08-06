@@ -3,7 +3,7 @@ from discord import app_commands, Attachment, File, Interaction, Message
 from utils.cog_logger import CogLogger
 from utils.handle_exception import handle_exception
 import math
-import inspect
+import discord.utils
 from io import BytesIO
 from pathlib import Path
 from PIL import Image
@@ -23,6 +23,10 @@ class Vevo(CogLogger):
             callback=self.vevo_context_menu,
         )
         self.bot.tree.add_command(self.vevo_menu)
+        param = self.vevo_command.app_command._params.get("image")  # type: ignore
+        if param:
+            param.required = True
+            param.default = discord.utils.MISSING
 
     def generate_image(self, image: bytes) -> BytesIO:
         original_image = Image.open(BytesIO(image)).convert("RGBA")
@@ -148,9 +152,3 @@ class Vevo(CogLogger):
 
 async def setup(bot):
     await bot.add_cog(Vevo(bot))
-
-    cmd = bot.get_command("vevo")
-    if cmd:
-        cmd.params["image"] = cmd.params["image"].replace(
-            default=inspect.Parameter.empty
-        )

@@ -3,6 +3,7 @@ from discord import app_commands, Attachment, File, Message, Interaction
 from utils.cog_logger import CogLogger
 from utils.handle_exception import handle_exception
 import asyncio
+import discord.utils
 from io import BytesIO
 from typing import TYPE_CHECKING
 
@@ -18,6 +19,10 @@ class Crispify(CogLogger):
             callback=self.crispify_context_menu,
         )
         self.bot.tree.add_command(self.crispify_menu)
+        param = self.crispify_command.app_command._params.get("media")  # type: ignore
+        if param:
+            param.required = True
+            param.default = discord.utils.MISSING
 
     async def crispify_media(self, url: str, target_format: str) -> bytes | str:
         cmd = [
