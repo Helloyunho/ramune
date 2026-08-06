@@ -75,7 +75,7 @@ class Crispify(CogLogger):
             "scale=-1:36",
             *(
                 ["-filter:v", "fps=15", "-movflags", "frag_keyframe+empty_moov"]
-                if target_format == "mp4"
+                if target_format == "mp4" or target_format == "gif"
                 else []
             ),
             "-f",
@@ -178,7 +178,11 @@ class Crispify(CogLogger):
         target_format = (
             "mp4"
             if media_type == "video"
-            else "png" if media_type == "image" else "mp3"
+            else (
+                ("png" if media.content_type != "image/gif" else "gif")
+                if media_type == "image"
+                else "mp3"
+            )
         )
 
         async with ctx.typing():
@@ -219,7 +223,11 @@ class Crispify(CogLogger):
         target_format = (
             "mp4"
             if media_type == "video"
-            else "png" if media_type == "image" else "mp3"
+            else (
+                ("png" if media.content_type != "image/gif" else "gif")
+                if media_type == "image"
+                else "mp3"
+            )
         )
 
         await interaction.response.defer()
