@@ -73,7 +73,7 @@ class Crispify(CogLogger):
             "-b:a",
             "16k",
             "-vf",
-            "scale=-1:36,fps=15",
+            "scale=-2:36,fps=15",
             *(
                 [
                     "-movflags",
