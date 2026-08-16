@@ -61,7 +61,7 @@ MORSE_CODE_DICT = {
 def generate_tone(duration, frequency=700, sample_rate=44100):
     t = np.linspace(0, duration, int(sample_rate * duration), endpoint=False)
     tone = 0.5 * np.sin(2 * np.pi * frequency * t)  # 0.5 cuz otherwise it's loud af
-    return tone.astype(np.int16)
+    return (tone * 32767).astype(np.int16)
 
 
 def generate_silence(duration, sample_rate=44100):
