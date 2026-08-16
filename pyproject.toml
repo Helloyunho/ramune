@@ -11,4 +11,5 @@ dependencies = [
     "python-dotenv",
     "selectolax",
     "pillow>=12.3.0",
+    "numpy>=2.5.2",
 ]
