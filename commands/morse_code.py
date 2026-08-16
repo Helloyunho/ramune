@@ -57,7 +57,7 @@ class MorseCode(CogLogger):
 
     @morse_group.command(
         name="encode",
-        description="Encodes a given text into Morse code. if the text is already in Morse code, that code will be converted to audio.",
+        description="Encodes a given text into Morse code.",
     )
     @app_commands.describe(text="The text to encode into Morse code.")
     @app_commands.allowed_contexts(guilds=True, dms=True, private_channels=True)
