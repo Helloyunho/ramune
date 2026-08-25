@@ -102,7 +102,7 @@ class MorseCode(CogLogger):
             None, self.generate_morse_audio, message.content
         )
 
-        await interaction.response.send_message(
+        await interaction.followup.send(
             content=f"Encoded morse code: `{code}`",
             file=discord.File(audio_file, filename="morse_code.wav"),
         )
