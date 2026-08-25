@@ -76,7 +76,10 @@ class MorseCode(CogLogger):
                 return
 
         self.logger.debug(f"Morse encode command requested for text: {text}")
-        code, audio_file = self.generate_morse_audio(text)
+        async with ctx.typing():
+            code, audio_file = await self.bot.loop.run_in_executor(
+                None, self.generate_morse_audio, text
+            )
 
         await ctx.send(
             content=f"Encoded morse code: `{code}`",
@@ -94,7 +97,10 @@ class MorseCode(CogLogger):
             return
 
         self.logger.debug(f"Morse encode command requested for text: {message.content}")
-        code, audio_file = self.generate_morse_audio(message.content)
+        await interaction.response.defer(thinking=True)
+        code, audio_file = await self.bot.loop.run_in_executor(
+            None, self.generate_morse_audio, message.content
+        )
 
         await interaction.response.send_message(
             content=f"Encoded morse code: `{code}`",
