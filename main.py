@@ -36,7 +36,7 @@ class Ramune(commands.Bot):
         self.logger.info("Ramune is ready!")
         self.logger.info(f"Logged in as {self.user} (ID: {self.user.id})")  # type: ignore
         for command in COMMANDS:
-            if command.count(".") > 0:
+            if command.count(".") > 0 or self.get_command(command) is not None:
                 # it's a subcommand, skip it
                 continue
             await self.load_extension(f"commands.{command}")
