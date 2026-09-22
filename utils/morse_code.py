@@ -78,7 +78,7 @@ def text_to_morse(text):
     return " ".join(morse_code)
 
 
-def morse_to_audio(morse_code, dot_duration=0.1, dash_duration=0.3, sample_rate=44100):
+def morse_to_audio(morse_code, dot_duration=0.1, dash_duration=0.3, sample_rate=16000):
     audio = np.array([], dtype=np.int16)
     for symbol in morse_code:
         if symbol == ".":
