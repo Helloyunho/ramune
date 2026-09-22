@@ -39,7 +39,7 @@ class MorseCode(CogLogger):
         with wave.open(audio_file, "wb") as wav_file:
             wav_file.setnchannels(1)
             wav_file.setsampwidth(2)
-            wav_file.setframerate(44100)
+            wav_file.setframerate(16000)
             wav_file.writeframes(audio_data)
 
         audio_file.seek(0)
@@ -74,6 +74,10 @@ class MorseCode(CogLogger):
             else:
                 await ctx.send("Please provide text to encode into Morse code.")
                 return
+        text = text.strip()
+        if len(text) > 240:
+            await ctx.send("Max length allowed is 240 characters.")
+            return
 
         self.logger.debug(f"Morse encode command requested for text: {text}")
         async with ctx.typing():
@@ -95,11 +99,17 @@ class MorseCode(CogLogger):
                 "Please provide text to encode into Morse code.", ephemeral=True
             )
             return
+        text = message.content.strip()
+        if len(text) > 240:
+            await interaction.response.send_message(
+                "Max length allowed is 240 characters.", ephemeral=True
+            )
+            return
 
-        self.logger.debug(f"Morse encode command requested for text: {message.content}")
+        self.logger.debug(f"Morse encode command requested for text: {text}")
         await interaction.response.defer(thinking=True)
         code, audio_file = await self.bot.loop.run_in_executor(
-            None, self.generate_morse_audio, message.content
+            None, self.generate_morse_audio, text
         )
 
         await interaction.followup.send(
