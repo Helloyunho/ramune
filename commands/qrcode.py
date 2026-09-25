@@ -28,7 +28,7 @@ class QRCode(CogLogger):
         )
         self.bot.tree.add_command(self.encode_menu)
         self.decode_menu = app_commands.ContextMenu(
-            name="Decode to QR Code",
+            name="Decode QR Code",
             callback=self.decode_context_menu,
             allowed_contexts=app_commands.AppCommandContext(
                 guild=True, dm_channel=True, private_channel=True
