@@ -41,6 +41,11 @@ class QRCode(CogLogger):
             param.required = True
             param.default = discord.utils.MISSING
 
+        param = self.decode_command.app_command._params.get("image")  # type: ignore
+        if param:
+            param.required = True
+            param.default = discord.utils.MISSING
+
     def generate_qrcode(self, text: str | bytes) -> BytesIO:
         qr = qrcode.QRCode()
         qr.add_data(text, optimize=20 if isinstance(text, str) else 0)
