@@ -42,5 +42,5 @@ class Ramune(commands.Bot):
             await self.load_extension(f"commands.{command}")
 
 
-client = Ramune("=", intents=discord.Intents.all())
+client = Ramune("=" if not getenv("DEV_MODE") else "==", intents=discord.Intents.all())
 client.run(getenv("DISCORD_API_TOKEN") or "")
