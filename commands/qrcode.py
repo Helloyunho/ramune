@@ -27,6 +27,14 @@ class QRCode(CogLogger):
             ),
         )
         self.bot.tree.add_command(self.encode_menu)
+        self.decode_menu = app_commands.ContextMenu(
+            name="Decode to QR Code",
+            callback=self.decode_context_menu,
+            allowed_contexts=app_commands.AppCommandContext(
+                guild=True, dm_channel=True, private_channel=True
+            ),
+        )
+        self.bot.tree.add_command(self.decode_menu)
 
         param = self.encode_command.app_command._params.get("text")  # type: ignore
         if param:
