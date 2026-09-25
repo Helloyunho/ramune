@@ -32,14 +32,16 @@ class Ramune(commands.Bot):
                 )
                 raise e
 
-    async def on_ready(self):
-        self.logger.info("Ramune is ready!")
-        self.logger.info(f"Logged in as {self.user} (ID: {self.user.id})")  # type: ignore
+    async def setup_hook(self):
         for command in COMMANDS:
-            if command.count(".") > 0 or self.get_command(command) is not None:
+            if command.count(".") > 0:
                 # it's a subcommand, skip it
                 continue
             await self.load_extension(f"commands.{command}")
+
+    async def on_ready(self):
+        self.logger.info("Ramune is ready!")
+        self.logger.info(f"Logged in as {self.user} (ID: {self.user.id})")  # type: ignore
 
 
 client = Ramune("=" if not getenv("DEV_MODE") else "==", intents=discord.Intents.all())
