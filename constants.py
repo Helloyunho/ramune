@@ -1,1 +1,1 @@
-COMMANDS = ["admin", "ps", "asm", "vevo", "crispify", "morse_code", "qrcode"]
+COMMANDS = ["admin", "ps", "asm", "vevo", "crispify", "morse_code", "qrcode", "aes"]
