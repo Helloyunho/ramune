@@ -52,7 +52,8 @@ class MorseCode(CogLogger):
     async def morse_group(self, ctx: commands.Context):
         if ctx.invoked_subcommand is None:
             await ctx.send(
-                "Please specify a subcommand. Use `/morse encode` or `/morse decode`."
+                "Please specify a subcommand. Use `/morse encode` or `/morse decode`.",
+                ephemeral=True,
             )
 
     @morse_group.command(
@@ -62,7 +63,7 @@ class MorseCode(CogLogger):
     @app_commands.describe(text="The text to encode into Morse code.")
     @app_commands.allowed_contexts(guilds=True, dms=True, private_channels=True)
     @handle_exception()
-    async def encode_command(self, ctx: commands.Context, text: str | None = None):
+    async def encode_command(self, ctx: commands.Context, *, text: str | None = None):
         if not text:
             if (
                 ctx.message.reference
@@ -72,11 +73,13 @@ class MorseCode(CogLogger):
             ):
                 text = message_reference.content
             else:
-                await ctx.send("Please provide text to encode into Morse code.")
+                await ctx.send(
+                    "Please provide text to encode into Morse code.", ephemeral=True
+                )
                 return
         text = text.strip()
         if len(text) > 240:
-            await ctx.send("Max length allowed is 240 characters.")
+            await ctx.send("Max length allowed is 240 characters.", ephemeral=True)
             return
 
         self.logger.debug(f"Morse encode command requested for text: {text}")

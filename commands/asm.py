@@ -37,15 +37,18 @@ class Assembly(CogLogger):
         )
 
         if not asm_text:
-            await ctx.send("Please provide assembly text to assemble.")
+            await ctx.send("Please provide assembly text to assemble.", ephemeral=True)
             return
         if arch not in ["x86", "arm", "mips", "powerpc"]:
             await ctx.send(
                 "Invalid architecture. Please choose from x86, arm, mips, or powerpc.",
+                ephemeral=True,
             )
             return
         if bits not in ["32", "64"]:
-            await ctx.send("Invalid bit width. Please choose either 32 or 64.")
+            await ctx.send(
+                "Invalid bit width. Please choose either 32 or 64.", ephemeral=True
+            )
             return
 
         await ctx.typing()
@@ -74,7 +77,8 @@ class Assembly(CogLogger):
 
         if not assembled_hex or assembled_hex.strip() == "" or not disassembled_output:
             await ctx.send(
-                "No assembly output generated. Please check the input assembly text."
+                "No assembly output generated. Please check the input assembly text.",
+                ephemeral=True,
             )
             return
 
@@ -113,15 +117,18 @@ class Assembly(CogLogger):
         )
 
         if not hex_text:
-            await ctx.send("Please provide hex text to disassemble.")
+            await ctx.send("Please provide hex text to disassemble.", ephemeral=True)
             return
         if arch not in ["x86", "arm", "mips", "powerpc"]:
             await ctx.send(
                 "Invalid architecture. Please choose from x86, arm, mips, or powerpc.",
+                ephemeral=True,
             )
             return
         if bits not in ["32", "64"]:
-            await ctx.send("Invalid bit width. Please choose either 32 or 64.")
+            await ctx.send(
+                "Invalid bit width. Please choose either 32 or 64.", ephemeral=True
+            )
             return
 
         await ctx.typing()
@@ -147,7 +154,8 @@ class Assembly(CogLogger):
 
         if not disasm_output:
             await ctx.send(
-                "No disassembly output generated. Please check the input hex text."
+                "No disassembly output generated. Please check the input hex text.",
+                ephemeral=True,
             )
             return
 

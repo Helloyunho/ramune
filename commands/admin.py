@@ -17,7 +17,7 @@ class Admin(CogLogger):
     async def sync_command(self, ctx: commands.Context):
         self.logger.debug("Command sync requested")
         await self.bot.tree.sync()
-        await ctx.send("Commands synced.")
+        await ctx.send("Commands synced.", ephemeral=True)
 
     @commands.hybrid_command(name="reload", description="Reloads a command cog.")
     @app_commands.describe(cog="The name of the command cog to reload.")

@@ -184,7 +184,9 @@ class Crispify(CogLogger):
             ):
                 media_converted = Media(self.bot.http, ctx.message.embeds[0])
             else:
-                await ctx.send("Please provide a media file to crispify.")
+                await ctx.send(
+                    "Please provide a media file to crispify.", ephemeral=True
+                )
                 return
         else:
             media_converted = Media(self.bot.http, media)
@@ -196,7 +198,8 @@ class Crispify(CogLogger):
         media_type = (media_converted.content_type or "unknown").split("/")[0]
         if media_type not in ["image", "video", "audio"]:
             await ctx.send(
-                "Invalid media type. Please provide an image, video, or audio file."
+                "Invalid media type. Please provide an image, video, or audio file.",
+                ephemeral=True,
             )
             return
 
@@ -215,7 +218,8 @@ class Crispify(CogLogger):
 
             if isinstance(result, str):
                 await ctx.send(
-                    f"Failed to crispify the media. FFmpeg error: \n```\n{result}\n```"
+                    f"Failed to crispify the media. FFmpeg error: \n```\n{result}\n```",
+                    ephemeral=True,
                 )
                 return
 

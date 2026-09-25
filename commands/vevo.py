@@ -101,7 +101,8 @@ class Vevo(CogLogger):
                 image_converted = Media(self.bot.http, ctx.message.embeds[0])
             else:
                 await ctx.send(
-                    "Please provide an image file to add a Vevo watermark to."
+                    "Please provide an image file to add a Vevo watermark to.",
+                    ephemeral=True,
                 )
                 return
         else:
@@ -113,7 +114,9 @@ class Vevo(CogLogger):
 
         image_type = (image_converted.content_type or "unknown").split("/")[0]
         if image_type not in ["image"]:
-            await ctx.send("Invalid image type. Please provide an image file.")
+            await ctx.send(
+                "Invalid image type. Please provide an image file.", ephemeral=True
+            )
             return
 
         async with ctx.typing():

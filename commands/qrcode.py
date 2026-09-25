@@ -71,7 +71,8 @@ class QRCode(CogLogger):
     async def qrcode_group(self, ctx: commands.Context):
         if ctx.invoked_subcommand is None:
             await ctx.send(
-                "Please specify a subcommand. Use `/qrcode encode` or `/qrcode decode`."
+                "Please specify a subcommand. Use `/qrcode encode` or `/qrcode decode`.",
+                ephemeral=True,
             )
 
     @qrcode_group.command(
@@ -81,7 +82,7 @@ class QRCode(CogLogger):
     @app_commands.describe(text="The text to encode into QR code.")
     @app_commands.allowed_contexts(guilds=True, dms=True, private_channels=True)
     @handle_exception()
-    async def encode_command(self, ctx: commands.Context, text: str | None = None):
+    async def encode_command(self, ctx: commands.Context, *, text: str | None = None):
         if not text:
             if (
                 ctx.message.reference
@@ -91,11 +92,15 @@ class QRCode(CogLogger):
             ):
                 text = message_reference.content
             else:
-                await ctx.send("Please provide text to encode into QR code.")
+                await ctx.send(
+                    "Please provide text to encode into QR code.", ephemeral=True
+                )
                 return
         text = text.strip()
         if len(text) == 0:
-            await ctx.send("Please provide text to encode into QR code.")
+            await ctx.send(
+                "Please provide text to encode into QR code.", ephemeral=True
+            )
             return
 
         self.logger.debug(f"QR code encode command requested for text: {text}")
@@ -158,7 +163,9 @@ class QRCode(CogLogger):
             ):
                 image_converted = Media(self.bot.http, ctx.message.embeds[0])
             else:
-                await ctx.send("Please provide a media file to decode QR code.")
+                await ctx.send(
+                    "Please provide a media file to decode QR code.", ephemeral=True
+                )
                 return
         else:
             image_converted = Media(self.bot.http, image)
@@ -169,7 +176,9 @@ class QRCode(CogLogger):
 
         image_type = (image_converted.content_type or "unknown").split("/")[0]
         if image_type not in ["image"]:
-            await ctx.send("Invalid image type. Please provide an image file.")
+            await ctx.send(
+                "Invalid image type. Please provide an image file.", ephemeral=True
+            )
             return
 
         async with ctx.typing():
@@ -181,7 +190,9 @@ class QRCode(CogLogger):
         if data:
             await ctx.send(f"Decoded QR code data: `{data}`")
         else:
-            await ctx.send("Failed to decode QR code from the provided image.")
+            await ctx.send(
+                "Failed to decode QR code from the provided image.", ephemeral=True
+            )
 
     @handle_exception()
     async def decode_context_menu(

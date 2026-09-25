@@ -22,7 +22,17 @@ class AESCommand(CogLogger):
             param.required = True
             param.default = discord.utils.MISSING
 
-        param = self.decrypt_command.app_command._params.get("image")  # type: ignore
+        param = self.decrypt_command.app_command._params.get("hex")  # type: ignore
+        if param:
+            param.required = True
+            param.default = discord.utils.MISSING
+
+        param = self.encrypt_file_command.app_command._params.get("file")  # type: ignore
+        if param:
+            param.required = True
+            param.default = discord.utils.MISSING
+
+        param = self.decrypt_file_command.app_command._params.get("file")  # type: ignore
         if param:
             param.required = True
             param.default = discord.utils.MISSING
